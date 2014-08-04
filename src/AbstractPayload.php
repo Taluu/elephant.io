@@ -42,7 +42,7 @@ abstract class AbstractPayload
     protected $fin = 0x1;
     protected $rsv = [0x0, 0x0, 0x0];
 
-    protected $mask    = false;
+    protected $mask    = 0x0;
     protected $maskKey = [0x0, 0x0, 0x0, 0x0];
 
     protected $opCode;
@@ -58,10 +58,10 @@ abstract class AbstractPayload
 
     public function setMask($mask)
     {
-        $this->mask = (bool)$mask;
+        $this->mask = (int)$mask;
 
         // @todo what is the type of mask ? what should we expect ? weak typing here which may provoke some errors ?
-        if (true === $this->mask) {
+        if (0x1 === $this->mask) {
             $this->maskKey = openssl_random_pseudo_bytes(4);
         }
 

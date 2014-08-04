@@ -55,7 +55,7 @@ class Decoder extends AbstractPayload
 
         $payload = implode('', array_map('chr', $payload));
 
-        if (true === $this->mask) {
+        if (0x1 === $this->mask) {
             $maskKey = substr($payload, $payloadOffset, 4);
             $this->maskKey = array_map('ord', str_split($maskKey));
 
@@ -64,7 +64,7 @@ class Decoder extends AbstractPayload
 
         $data = substr($payload, $payloadOffset, $length);
 
-        if (true === $this->mask) {
+        if (0x1 === $this->mask) {
             $data = $this->maskData($data, $maskKey);
         }
 

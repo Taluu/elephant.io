@@ -53,7 +53,7 @@ class Encoder extends AbstractPayload
                 break;
         }
 
-        if (true === $this->mask) {
+        if (0x1 === $this->mask) {
             $encodeData .= $this->maskKey;
             $rawMessage = $this->maskData($rawMessage, $this->maskKey);
         }
