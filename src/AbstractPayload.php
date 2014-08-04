@@ -61,7 +61,7 @@ abstract class AbstractPayload
         $this->mask = $mask;
 
         // @otodo what is the type of mask ? what should we expect ? weak typing here which may provoke some errors ?
-        if (true == $this->mask) {
+        if (1 == $this->mask) {
             $this->maskKey = openssl_random_pseudo_bytes(4);
         }
 
