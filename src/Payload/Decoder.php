@@ -45,7 +45,7 @@ class Decoder extends AbstractPayload
         $this->opCode = $this->payload[0] & 0xF;
         $this->setMask($this->payload[1] >> 7);
 
-        $maskkey = "\x00\x00\x00\x00";
+        $maskKey = [0x0, 0x0, 0x0, 0x0];
 
         $payloadOffset = 2;
 
@@ -55,19 +55,17 @@ class Decoder extends AbstractPayload
 
         $payload = implode('', array_map('chr', $payload));
 
-        // @otodo what is the type of mask ? what should we expect ? weak typing here which may provoke some errors ?
-        if (1 == $mask) {
+        if (true === $this->mask) {
             $maskKey = substr($payload, $payloadOffset, 4);
-            $this->maskKey = $maskkey;
+            $this->maskKey = array_map('ord', str_split($maskKey));
 
             $payloadOffset += 4;
         }
 
         $data = substr($payload, $payloadOffset, $length);
 
-        // @otodo what is the type of mask ? what should we expect ? weak typing here which may provoke some errors ?
-        if ($mask == 1) {
-            $data = $this->maskData($data, $maskkey);
+        if (true === $this->mask) {
+            $data = $this->maskData($data, $maskKey);
         }
 
         return $data;
