@@ -24,6 +24,8 @@ use ElephantIO\AbstractPayload;
  */
 class Decoder extends AbstractPayload implements Countable
 {
+    private $data;
+    private $payload;
     private $length = 0;
 
     /** @param string $payload Payload to decode */
