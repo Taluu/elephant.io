@@ -24,9 +24,6 @@ use ElephantIO\AbstractPayload;
  */
 class Encoder extends AbstractPayload
 {
-    private $data;
-    private $payload;
-
     /**
      * @param string  $data   data to encode
      * @param integer $opcode OpCode to use (one of AbstractPayload's constant)
