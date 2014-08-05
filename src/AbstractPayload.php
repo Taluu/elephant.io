@@ -50,6 +50,9 @@ abstract class AbstractPayload
 
     protected $opCode;
 
+    protected $data;
+    protected $payload;
+
     /**
      * Mask a data according to the current mask key
      *
