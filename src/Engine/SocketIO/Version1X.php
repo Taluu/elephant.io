@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use GuzzleHttp\Stream\Stream;
 
 use ElephantIO\Engine\SocketIO,
+    ElephantIO\Payload\Encoder,
     ElephantIO\Exception\SocketException;
 
 /**
@@ -62,7 +63,7 @@ class Version1X extends AbstractSocketIO
             return;
         }
 
-        $this->send(EngineInterface::CLOSE);
+        $this->write(EngineInterface::CLOSE);
 
         $this->stream->close();
         $this->stream = null;
@@ -80,6 +81,21 @@ class Version1X extends AbstractSocketIO
 =======
         $this->write(EngineInterface::MESSAGE, static::EVENT . json_encode(['name' => $event, 'args' => $args]));
 >>>>>>> 87a9de9cdf7787bb07801e602c7173f0ade829f6
+    }
+
+    /** {@inheritDoc} */
+    public function write($code, $message = null)
+    {
+        if (!is_int($code) || 0 > $code || 6 < $code) {
+            throw new InvalidArgumentException('Wrong message type when trying to write on the socket');
+        }
+
+        if (!$this->stream instanceof Stream) {
+            return;
+        }
+
+        $payload = new Encoder($code . $message, Encoder::OPCODE_TEXT, true);
+        $this->stream->write((string) $payload);
     }
 
     /** {@inheritDoc} */
