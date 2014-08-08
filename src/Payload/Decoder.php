@@ -69,7 +69,7 @@ class Decoder extends AbstractPayload implements Countable
         $payload = implode('', array_map('chr', $payload));
 
         // when payload is able to mask, get the mask-key.
-        true === $this->mask && $this->maskKey = substr($payload, ($payloadOffset += 4), 4);
+        true === $this->mask && $this->maskKey = substr($payload, $payloadOffset, 4) && $payloadOffset += 4;
         $data = substr($payload, $payloadOffset, $length);
 
         if (true === $this->mask) {

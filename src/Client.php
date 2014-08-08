@@ -13,6 +13,8 @@ namespace ElephantIO;
 
 use Psr\Log\LoggerInterface;
 
+use ElephantIO\Exception\SocketException;
+
 /**
  * Represents the IO Client which will send and receive the requests to the
  * websocket server
@@ -33,7 +35,8 @@ class Client
         $this->logger = $logger;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         try {
             $this->close();
         } catch (\Exception $e) {} // silently fail if we're not connected
@@ -47,12 +50,17 @@ class Client
      */
     public function initialize($keepAlive = false)
     {
-        null !== $this->logger && $this->logger->info('Connecting to the websocket');
-        $this->engine->connect();
+        try {
+            null !== $this->logger && $this->logger->debug('Connecting to the websocket');
+            $this->engine->connect();
+            null !== $this->logger && $this->logger->debug('Connected to the server');
 
-        if (true === $keepAlive) {
-            null !== $this->logger && $this->logger->info('Keeping alive the connection to the websocket');
-            $this->engine->keepAlive();
+            if (true === $keepAlive) {
+                null !== $this->logger && $this->logger->debug('Keeping alive the connection to the websocket');
+                $this->engine->keepAlive();
+            }
+        } catch (SocketException $e) {
+            null !== $this->logger && $this->logger->error('Could not connect to the server', ['exception' => $e]);
         }
 
         return $this;
@@ -65,18 +73,19 @@ class Client
      */
     public function read()
     {
-        null !== $this->logger && $this->logger->info('Reading a new message from the socket');
+        null !== $this->logger && $this->logger->debug('Reading a new message from the socket');
         return $this->engine->read();
     }
 
     /**
-     * Sends a message through the websocket (parameters to determine)
+     * Emits a message through the engine
      *
      * @return $this
      */
-    public function send()
+    public function emit($event, array $args)
     {
-        return $this;
+        null !== $this->logger && $this->logger->debug('Sending a new message', ['event' => $event, 'args' => $args]);
+        $this->engine->emit($event, $args);
     }
 
     /**
@@ -86,10 +95,20 @@ class Client
      */
     public function close()
     {
-        null !== $this->logger && $this->logger->info('Closing the connection to the websocket');
+        null !== $this->logger && $this->logger->debug('Closing the connection to the websocket');
         $this->engine->close();
 
         return $this;
+    }
+
+    /**
+     * Gets the engine used, for more advanced functions
+     *
+     * @return EngineInterface
+     */
+    public function getEngine()
+    {
+        return $this->engine;
     }
 }
 
