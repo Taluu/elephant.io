@@ -86,6 +86,8 @@ class Client
     {
         null !== $this->logger && $this->logger->debug('Sending a new message', ['event' => $event, 'args' => $args]);
         $this->engine->emit($event, $args);
+
+        return $this;
     }
 
     /**
